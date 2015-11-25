@@ -2,30 +2,47 @@ var Page = React.createClass({
 	getInitialState: function() {
 		return {
 			tweets: [],
-			max_id: ""
 		}
 	},
 
+	getCookie: function() {
+		var cookie = document.cookie;
+		var m_id;
+		if (cookie.indexOf("max_id") > -1) {
+			console.log(m_id)
+			m_id = cookie.split("max_id=")[1];
+			return m_id;
+		} 
+		return ""
+	},
+
 	componentDidMount: function() {
-		this.loadTweets("")
+		this.loadTweets();
 	},
 
 	loadTweets: function() {
 		var querystring = "";
-		if (this.state.max_id != "") {
-			querystring = "?max_id=" + this.state.max_id
+		var c = this.getCookie();
+		if (c != "") {
+			querystring = "?max_id=" + c
 		}
+		console.log(c)
+
 		$.get("http://localhost:3000/tweets" + querystring, function(data) {
 			var d = data;
+			console.log(data)
+			console.log('got data')
 			if (this.isMounted()) {
-				document.cookie="max_id=" + d[d.length-1].id
-				this.setState({tweets: d, max_id: d[d.length-1].id})
+				this.setState({tweets: d})
 			}
 		}.bind(this))
 	},
 
-	getNextSet: function(m_id) {
-		this.setState({max_id: m_id})
+	getNextSet: function(toDelete) {
+		console.log(toDelete)
+
+
+		document.cookie="max_id=" + this.state.tweets[this.state.tweets.length-1].id_str
 		this.loadTweets();
 	},
 
@@ -33,7 +50,7 @@ var Page = React.createClass({
 		var pieces = [];
 
 		this.state.tweets.forEach(function(val) {
-			pieces.push(<Row id={val.id} text={val.text}></Row>)
+			pieces.push(<Row id={val.id_str} text={val.text}></Row>)
 		})
 
 		return (
@@ -43,28 +60,12 @@ var Page = React.createClass({
 			</div>
 		)
 	},
-
-	getNextTweet: function() {
-		console.log(this.state.index)
-		console.log(this.state.tweets[this.state.index])
-		var lastIndex = this.state.index;	
-		this.setState({index: lastIndex + 1})
-	},
-
-	deleteTweet: function() {
-		console.log(this.state.index)
-		console.log(this.state.tweets[this.state.index])
-		console.log(this.state.tweets[this.state.index].tweet_id)
-		$.post("http://localhost:3000/delete/" + this.state.tweets[this.state.index].tweet_id, function(data) {
-			this.getNextTweet()
-		}.bind(this))
-	}
 });
 
 var Row = React.createClass({
 	componentDidMount: function() {
 		var elem = ReactDOM.findDOMNode(this);
-		$elem = $("#" + elem.id + " input").prop("checked", true);
+		$elem = $("#" + elem.id + " input").prop("checked", false);
 	},
 
 	render: function() {
@@ -87,17 +88,28 @@ var Tweet = React.createClass({
 
 var Delete = React.createClass({
 
+	handleDelete: function(toDelete) {
+		toDelete.forEach(function(value) {
+			$.post("http://localhost:3000/delete/" + value);
+		})
+
+	},
+
 	handleClick: function() {
 		var toDelete = []
 		$(":checked").each(function() {
 			toDelete.push($(this).val());
 		});
 
+		this.handleDelete(toDelete);
+
 		// next step: post this to delete endpoint
 		// altho, before we delete, we need to note the last tweet so we can get the next page
 		// console.log(toDelete)
 		this.props.getNextSet(toDelete[toDelete.length-1])
 	},
+
+
 
 	render: function() {
 		console.log(this.props)

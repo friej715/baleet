@@ -12,6 +12,7 @@ console.log(keys)
 app.use('/', express.static('public'));
 
 app.post('/delete/:id', function (req, res) {
+	console.log(req.params.id)
 	client.post('statuses/destroy/' + req.params.id, function (error, tweet, response) {
 		if (error) throw new Error(JSON.stringify(error));
 		console.log(tweet);
@@ -21,26 +22,18 @@ app.post('/delete/:id', function (req, res) {
 
 
 app.get('/tweets', function (req, res) {
-	console.log(req.query.max_id)
-	/*
-	//end_parsed will be emitted once parsing finished 
-	converter.on("end_parsed", function (jsonArray) {
-	   console.log(jsonArray); //here is your result jsonarray
-	   res.json(jsonArray); 
-	});
-		 
-	//read from file 
-	require("fs").createReadStream("./tweets.csv").pipe(converter);
-	*/
-
 	var params = {
 		screen_name: "jfriedhoff",
 		count: 200,
-		max_id: req.query.max_id
+	}
+
+	if (req.query.max_id) {
+		params["max_id"] = req.query.max_id
 	}
 
 	client.get('statuses/user_timeline', params, function(error, tweets, response) {
-		console.log(tweets)
+		if (error) throw new Error(JSON.stringify(error))
+			console.log(tweets)
 		res.json(tweets)
 	})
 
