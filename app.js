@@ -21,6 +21,7 @@ app.post('/delete/:id', function (req, res) {
 
 
 app.get('/tweets', function (req, res) {
+	/*
 	//end_parsed will be emitted once parsing finished 
 	converter.on("end_parsed", function (jsonArray) {
 	   console.log(jsonArray); //here is your result jsonarray
@@ -29,6 +30,17 @@ app.get('/tweets', function (req, res) {
 		 
 	//read from file 
 	require("fs").createReadStream("./tweets.csv").pipe(converter);
+	*/
+
+	var params = {
+		screen_name: "jfriedhoff",
+		count: 200
+	}
+
+	client.get('statuses/user_timeline', params, function(error, tweets, response) {
+		res.json(tweets)
+	})
+
 
 });
 
