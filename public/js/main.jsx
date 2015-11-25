@@ -2,17 +2,31 @@ var Page = React.createClass({
 	getInitialState: function() {
 		return {
 			tweets: [],
-			index: 0
+			max_id: ""
 		}
 	},
 
 	componentDidMount: function() {
-		$.get("http://localhost:3000/tweets", function(data) {
+		this.loadTweets("")
+	},
+
+	loadTweets: function() {
+		var querystring = "";
+		if (this.state.max_id != "") {
+			querystring = "?max_id=" + this.state.max_id
+		}
+		$.get("http://localhost:3000/tweets" + querystring, function(data) {
 			var d = data;
 			if (this.isMounted()) {
-				this.setState({tweets: d})
+				document.cookie="max_id=" + d[d.length-1].id
+				this.setState({tweets: d, max_id: d[d.length-1].id})
 			}
 		}.bind(this))
+	},
+
+	getNextSet: function(m_id) {
+		this.setState({max_id: m_id})
+		this.loadTweets();
 	},
 
 	render: function() {
@@ -25,7 +39,7 @@ var Page = React.createClass({
 		return (
 			<div>
 				{pieces}
-				<Delete/>
+				<Delete getNextSet={this.getNextSet}/>
 			</div>
 		)
 	},
@@ -72,6 +86,7 @@ var Tweet = React.createClass({
 });
 
 var Delete = React.createClass({
+
 	handleClick: function() {
 		var toDelete = []
 		$(":checked").each(function() {
@@ -80,12 +95,12 @@ var Delete = React.createClass({
 
 		// next step: post this to delete endpoint
 		// altho, before we delete, we need to note the last tweet so we can get the next page
-		console.log(toDelete)
-
+		// console.log(toDelete)
+		this.props.getNextSet(toDelete[toDelete.length-1])
 	},
 
-
 	render: function() {
+		console.log(this.props)
 		return (
 			<div>
 				<button onClick={this.handleClick}>Delete All Checked</button>

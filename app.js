@@ -21,6 +21,7 @@ app.post('/delete/:id', function (req, res) {
 
 
 app.get('/tweets', function (req, res) {
+	console.log(req.query.max_id)
 	/*
 	//end_parsed will be emitted once parsing finished 
 	converter.on("end_parsed", function (jsonArray) {
@@ -34,10 +35,12 @@ app.get('/tweets', function (req, res) {
 
 	var params = {
 		screen_name: "jfriedhoff",
-		count: 200
+		count: 200,
+		max_id: req.query.max_id
 	}
 
 	client.get('statuses/user_timeline', params, function(error, tweets, response) {
+		console.log(tweets)
 		res.json(tweets)
 	})
 
