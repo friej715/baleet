@@ -12,11 +12,9 @@ console.log(keys)
 app.use('/', express.static('public'));
 
 app.post('/delete/:id', function (req, res) {
-
-	console.log(req.params.id)
-
-	client.post('statuses/destroy/' + req.params.id + ".json", function (error, tweet, response) {
-		// if (error) throw error;
+	var string = "statuses/destroy/" + req.params.id;
+	client.post(string, function (error, tweet, response) {
+		if (error) throw error;
 		console.log(tweet);
 		console.log(response);
 	})

@@ -10,6 +10,7 @@ var Page = React.createClass({
 		$.get("http://localhost:3000/tweets", function(data) {
 			var d = data;
 			if (this.isMounted()) {
+				console.log(data)
 				this.setState({tweets: d})
 			}
 		}.bind(this))
@@ -22,15 +23,29 @@ var Page = React.createClass({
 			tweetText = tweet.text;
 		}
 
-		$.post("http://localhost:3000/delete/669362698379988992", function(data) {
-			console.log(data)
-		})
-
 		return (
-			<div>{tweetText}</div>
+			<div>
+				<div>{tweetText}</div>
+				
+				<div>
+					<button onClick={this.getNextTweet}>keep</button>
+					<button onClick={this.deleteTweet}>baleet</button>
+				</div>
+			</div>
 		)
-	}
+	},
 
+	getNextTweet: function() {
+		var lastIndex = this.state.index;	
+		this.setState({index: lastIndex + 1})
+	},
+
+	deleteTweet: function() {
+		console.log(this.state.tweets[this.state.index].tweet_id)
+		$.post("http://localhost:3000/delete/" + this.state.tweets[this.state.index].tweet_id, function(data) {
+			this.getNextTweet()
+		}.bind(this))
+	}
 })
 
 ReactDOM.render(
