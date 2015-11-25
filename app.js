@@ -12,9 +12,8 @@ console.log(keys)
 app.use('/', express.static('public'));
 
 app.post('/delete/:id', function (req, res) {
-	var string = "statuses/destroy/" + req.params.id;
-	client.post(string, function (error, tweet, response) {
-		if (error) throw error;
+	client.post('statuses/destroy/' + req.params.id, function (error, tweet, response) {
+		if (error) throw new Error(JSON.stringify(error));
 		console.log(tweet);
 		console.log(response);
 	})

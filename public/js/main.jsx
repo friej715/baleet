@@ -36,11 +36,15 @@ var Page = React.createClass({
 	},
 
 	getNextTweet: function() {
+				console.log(this.state.index)
+		console.log(this.state.tweets[this.state.index])
 		var lastIndex = this.state.index;	
 		this.setState({index: lastIndex + 1})
 	},
 
 	deleteTweet: function() {
+		console.log(this.state.index)
+		console.log(this.state.tweets[this.state.index])
 		console.log(this.state.tweets[this.state.index].tweet_id)
 		$.post("http://localhost:3000/delete/" + this.state.tweets[this.state.index].tweet_id, function(data) {
 			this.getNextTweet()
