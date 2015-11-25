@@ -48,7 +48,6 @@ var Page = React.createClass({
 
 	render: function() {
 		var pieces = [];
-
 		this.state.tweets.forEach(function(val) {
 			pieces.push(<Row id={val.id_str} text={val.text}></Row>)
 		})
@@ -91,7 +90,7 @@ var Delete = React.createClass({
 	handleDelete: function(toDelete) {
 		toDelete.forEach(function(value) {
 			$.post("http://localhost:3000/delete/" + value);
-		})
+		});
 
 	},
 
@@ -102,6 +101,8 @@ var Delete = React.createClass({
 		});
 
 		this.handleDelete(toDelete);
+		$("input").prop("checked", false);
+		document.body.scrollTop = document.documentElement.scrollTop = 0;
 
 		// next step: post this to delete endpoint
 		// altho, before we delete, we need to note the last tweet so we can get the next page

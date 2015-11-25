@@ -12,7 +12,6 @@ console.log(keys)
 app.use('/', express.static('public'));
 
 app.post('/delete/:id', function (req, res) {
-	console.log(req.params.id)
 	client.post('statuses/destroy/' + req.params.id, function (error, tweet, response) {
 		if (error) throw new Error(JSON.stringify(error));
 		console.log(tweet);
@@ -31,9 +30,9 @@ app.get('/tweets', function (req, res) {
 		params["max_id"] = req.query.max_id
 	}
 
+
 	client.get('statuses/user_timeline', params, function(error, tweets, response) {
 		if (error) throw new Error(JSON.stringify(error))
-			console.log(tweets)
 		res.json(tweets)
 	})
 
