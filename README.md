@@ -54,3 +54,8 @@ componentDidMount: function() {
 see the `true` at the end of that line? that means that baleet assumes you want to delete most of your shit--all the boxes will be checked by default. this is my misanthropic default. you can change that to `false` if you want to cherry pick a little more.
 
 i think that's it? let's set our twitter archives on fire is basically what i am saying.
+
+# faq
+
+* when will it not look like garbage?
+	* when you submit a pull request doing all that work for me friendo
