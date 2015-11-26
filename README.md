@@ -47,11 +47,11 @@ obviously you'll want to replace screen_name with your own. you can change the c
 ```
 componentDidMount: function() {
 	var elem = ReactDOM.findDOMNode(this);
-	$elem = $("#" + elem.id + " input").prop("checked", true);
+	$elem = $("#" + elem.id + " input").prop("checked", false);
 },
 ```
 
-see the `true` at the end of that line? that means that baleet assumes you want to delete most of your shit--all the boxes will be checked by default. this is my misanthropic default. you can change that to `false` if you want to cherry pick a little more.
+see the `false` at the end of that line? you can change that to `true` if you like. `true` means all the check-to-delete checkboxes will start checked--i.e. baleet assumes you want to delete most of your shit. if you are feeling less misanthropic, keep it on `false`.
 
 i think that's it? let's set our twitter archives on fire is basically what i am saying.
 
