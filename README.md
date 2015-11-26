@@ -36,11 +36,11 @@ module.exports = {
 ```
 var params = {
 	screen_name: "jfriedhoff",
-	count: 200,
+	count: 3,
 }
 ```
 
-obviously you'll want to replace screen_name with your own. you can change the count too if you like.
+obviously you'll want to replace screen_name with your own. you can change the count too if you like, but! there is weirdness happening where if you try to delete more than ~3 tweets at once, it hangs and messes up. so increase this count at your own risk. again, if you wannt help figure this out.........
 
 * `main.jsx` - you don't have to worry about too much here, the only setting you might care about is in this chunk:
 

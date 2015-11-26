@@ -23,7 +23,7 @@ app.post('/delete/:id', function (req, res) {
 app.get('/tweets', function (req, res) {
 	var params = {
 		screen_name: "jfriedhoff",
-		count: 200,
+		count: 3,
 	}
 
 	if (req.query.max_id) {
