@@ -88,8 +88,12 @@ var Tweet = React.createClass({
 var Delete = React.createClass({
 
 	handleDelete: function(toDelete) {
+
 		toDelete.forEach(function(value) {
-			$.post("http://localhost:3000/delete/" + value);
+			$.ajax({
+				url: "http://localhost:3000/delete/" + value,
+				type: "POST",
+			});
 		});
 
 	},

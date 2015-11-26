@@ -14,8 +14,7 @@ app.use('/', express.static('public'));
 app.post('/delete/:id', function (req, res) {
 	client.post('statuses/destroy/' + req.params.id, function (error, tweet, response) {
 		if (error) throw new Error(JSON.stringify(error));
-		console.log(tweet);
-		console.log(response);
+		res.json(response)
 	})
 })
 
@@ -23,7 +22,7 @@ app.post('/delete/:id', function (req, res) {
 app.get('/tweets', function (req, res) {
 	var params = {
 		screen_name: "jfriedhoff",
-		count: 3,
+		count: 200,
 	}
 
 	if (req.query.max_id) {
