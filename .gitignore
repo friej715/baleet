@@ -2,3 +2,5 @@ node_modules
 tweets.csv
 keys.js
 .DS_Store
+data
+public/tweets

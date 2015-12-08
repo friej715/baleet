@@ -5,73 +5,63 @@ var Page = React.createClass({
 		}
 	},
 
-	getCookie: function() {
-		var cookie = document.cookie;
-		var m_id;
-		if (cookie.indexOf("max_id") > -1) {
-			console.log(m_id)
-			m_id = cookie.split("max_id=")[1];
-			return m_id;
-		} 
-		return ""
-	},
-
 	componentDidMount: function() {
 		this.loadTweets();
 	},
 
 	loadTweets: function() {
-		var querystring = "";
-		var c = this.getCookie();
-		if (c != "") {
-			querystring = "?max_id=" + c
-		}
-		console.log(c)
-
-		$.get("http://localhost:3000/tweets" + querystring, function(data) {
-			var d = data;
-			console.log(data)
-			console.log('got data')
-			if (this.isMounted()) {
-				this.setState({tweets: d})
+		var con = this;
+		$.get("http://localhost:3000/files", function(files) {
+			if ($.inArray(".DS_Store", files) > -1) {
+				var index = $.inArray(".DS_Store", files)
+				console.log(index)
+				files.splice(index, 1);
 			}
-		}.bind(this))
+		}).done(function(files) {
+			var curFile = files[0];
+			console.log(curFile)
+			$.get("http://localhost:3000/tweets/" + curFile, function(data) {
+				var d = JSON.parse(data);
+				con.setState({tweets: d})
+			})
+		});
 	},
 
-	getNextSet: function(toDelete) {
-		console.log(toDelete)
-
-
-		document.cookie="max_id=" + this.state.tweets[this.state.tweets.length-1].id_str
-		this.loadTweets();
+	handleDelete: function(id) {
+		var newTweets = cloneObject(this.state.tweets);
+		this.state.tweets.forEach(function(val, index) {
+			if (val["id_str"] == id) {
+				newTweets.splice(index, 1);
+			}
+		})
+		this.setState({tweets: cloneObject(newTweets)});
 	},
 
 	render: function() {
 		var pieces = [];
+		var con = this;
 		this.state.tweets.forEach(function(val) {
-			pieces.push(<Row id={val.id_str} text={val.text}></Row>)
+			pieces.push(<Row id={val.id_str} handleDelete={con.handleDelete} text={val.text}></Row>)
 		})
 
 		return (
 			<div>
 				{pieces}
-				<Delete getNextSet={this.getNextSet}/>
 			</div>
 		)
 	},
 });
 
 var Row = React.createClass({
-	componentDidMount: function() {
-		var elem = ReactDOM.findDOMNode(this);
-		$elem = $("#" + elem.id + " input").prop("checked", false);
+	handleDelete: function(id) {
+		this.props.handleDelete(id);
 	},
 
 	render: function() {
 		return (
 			<div id={this.props.id} style={{"margin-bottom":"20px"}}>
-				<input style={{float:"left"}} type="checkbox" value={this.props.id}/>
 				<Tweet text={this.props.text}/>
+				<Delete handleDelete={this.handleDelete} id={this.props.id}/>
 			</div>
 		)
 	}
@@ -86,46 +76,43 @@ var Tweet = React.createClass({
 });
 
 var Delete = React.createClass({
-
 	handleDelete: function(toDelete) {
-
-		toDelete.forEach(function(value) {
-			$.ajax({
-				url: "http://localhost:3000/delete/" + value,
-				type: "POST",
-			});
+		var con = this;
+		console.log(con.props)
+		$.ajax({
+			url: "http://localhost:3000/delete/" + this.props.id,
+			type: "POST",
+			success: function() {
+				con.props.handleDelete(con.props.id)
+			}
 		});
-
 	},
-
-	handleClick: function() {
-		var toDelete = []
-		$(":checked").each(function() {
-			toDelete.push($(this).val());
-		});
-
-		this.handleDelete(toDelete);
-		$("input").prop("checked", false);
-		document.body.scrollTop = document.documentElement.scrollTop = 0;
-
-		// next step: post this to delete endpoint
-		// altho, before we delete, we need to note the last tweet so we can get the next page
-		// console.log(toDelete)
-		this.props.getNextSet(toDelete[toDelete.length-1])
-	},
-
-
 
 	render: function() {
-		console.log(this.props)
 		return (
 			<div>
-				<button onClick={this.handleClick}>Delete All Checked</button>
+				<button onClick={this.handleDelete}>Delete</button>
 			</div>
 		)
 	}
 
 })
+
+
+// sssshhhhhh
+function cloneObject(obj) {
+    if (obj === null || typeof obj !== 'object') {
+        return obj;
+    }
+ 
+    var temp = obj.constructor(); // give temp the original obj's constructor
+    for (var key in obj) {
+        temp[key] = cloneObject(obj[key]);
+    }
+ 
+    return temp;
+}
+
 
 ReactDOM.render(
 	<Page/>, document.getElementById("main")

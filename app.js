@@ -3,7 +3,8 @@ var app = express();
 var Converter = require('csvtojson').Converter;
 var converter = new Converter({});
 var Twitter = require('twitter');
-var keys = require("./keys.js")
+var keys = require("./keys.js");
+var fs = require("fs");
 
 var client = new Twitter(keys);
 
@@ -18,25 +19,14 @@ app.post('/delete/:id', function (req, res) {
 	})
 })
 
-
-app.get('/tweets', function (req, res) {
-	var params = {
-		screen_name: "jfriedhoff",
-		count: 200,
-	}
-
-	if (req.query.max_id) {
-		params["max_id"] = req.query.max_id
-	}
-
-
-	client.get('statuses/user_timeline', params, function(error, tweets, response) {
-		if (error) throw new Error(JSON.stringify(error))
-		res.json(tweets)
+app.get('/files', function(req, res) {
+	fs.readdir(__dirname +"/public/tweets", function(err, data) {
+		if (err) throw err;
+		res.json(data)
 	})
 
+})
 
-});
 
 var server = app.listen(3000, function () {
   var host = server.address().address;
