@@ -8,8 +8,6 @@ var fs = require("fs");
 
 var client = new Twitter(keys);
 
-console.log(keys)
-
 app.use('/', express.static('public'));
 
 app.post('/delete/:id', function (req, res) {
