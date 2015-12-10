@@ -1,26 +1,23 @@
 ![baleeted](https://i.ytimg.com/vi/7rrZ-sA4FQc/maxresdefault.jpg)
 
-# what
+# What's Baleet?
 
-imo it's really annoying that twitter doesn't give you a better interface for deleting your tweets than the web archive. i always lose my place and get frustrated with it. so i am making my own.
+Baleet is a tool that allows you to peruse your entire Twitter archive and delete any unwanted tweets in a quick, easy, and low-friction manner.
 
-# status
+I find the web interface for the Twitter archive to be really clunky for doing this sort of thing, so I decided to build a tool that let me do it much faster.
 
-v0.1 and not a god damned float more.
+# Status
 
-# how to
+Beta. ***I don't recommend using this tool yet until I've gotten other folks to give it a code review.***
 
-first of all, i highly recommend not messing with this app until i remove this "i highly recommend not messing with this app" message. i do not vouch for literally any part of it yet. i am keeping any beginner instructions out of this readme specifically because no one who is not ready to break shit should touch it. (don't worry beginner friends, when it is more stable i will Have Your Back and document the shit out of it.)
+# How do you use it?
 
-but here is how it works.
+See the Status section for my caveat. Again, I don't recommend using this until I bump its status up to alpha. These instructions are primarily for people who have experience with this and want to help me code review.
 
-baleet is a nodejs and react application. it runs on your own machine. no oauth, i never touch any of your private info. it runs on port 3000. i don't encrypt anything at any point.
+Baleet is a NodeJS and ReactJS application. It runs on your own machine: unlike a lot of other tweet delete apps, there's no authentication required, and I never touch any of your private information.
 
-baleet uses cookies to try to bookmark where you left off. that's the `max_id` cookie--it's used to serve up the next chunk of tweets. this means that, if you (or the app) accidentally messes up and you want to go back, you should be able to change the value of this cookie to the most recent tweet you want to allow. cookie nonsense is behaving the weirdest rn so if you want to help fix that, be my guest!
-
-there are three key parts of baleet:
-
-* `keys.js` - this file doesn't exist in this repo because i'm an idiot who always manages to post my api keys to github. because i am an idiot you get to make it yourself, so make it in the root directory of baleet. this is where you put your api keys. it'll look something like: 
+You need two things before you can use Baleet:
+* ***API keys.*** An API key is just a code that a piece of code can use to identify that that code is, in fact, authenticated by you. To get a Twitter API key, you have to create a new application [here](https://apps.twitter.com/), and generate an access token. In the Baleet folder, create a file called `keys.js`. This is where your keys go, and that file will look something like this:
 
 ```
 module.exports = {
@@ -31,31 +28,24 @@ module.exports = {
 }
 ```
 
-* `app.js` - this handles all the actual posting to twitter and such. the lines you care about are:
+* ***Your Twitter archive.*** [Here's](https://support.twitter.com/articles/20170160?lang=en) how you get your Twitter archive. The files you want are in `/data/js/tweets`. Create a folder in `baleet/public` called `tweets` (this is a silly place for it and i'm going to change this soon!!!!) and put your tweets in there. We'll have to modify them a tiny bit more, but we'll do that in a second.
 
-```
-var params = {
-	screen_name: "jfriedhoff",
-	count: 200,
-}
-```
+Okay, now you have all the external stuff you need. Here's how to set it up.
 
-obviously you'll want to replace screen_name with your own. you can change the count too if you like! it seems like the max is 200 at a time, though.
+* Install [NodeJS](https://nodejs.org/en/download/).
+* Download Baleet.
+* Open up your command line (Terminal if you're on a Mac).
+* Change to the Baleet directory. (You can do this by typing `cd` and then dragging in the Baleet folder.)
+* Type `npm install` to install all of Baleet's dependencies.
+* In a new Terminal window, navigate to your `baleet/public/tweets` folder.
+* Put the following command into Terminal and hit enter: `for i in $(ls *.js); do sed -i.js '1d' $i; done` - this removes the first line of each tweet file, which is extraneous in our case.
+* Delete any files in the directory that have a `.js.js` extension. Leave the ones that are just `.js`.
+* In the first Terminal window (the one that is in the `baleet/` directory), type `node app.js` and hit enter.
+* Go to `http://localhost:3000`.
+* Baleet some tweets! When you finish a month, don't forget to delete its file from your `baleet/public/tweets` folder.
 
-* `main.jsx` - you don't have to worry about too much here, the only setting you might care about is in this chunk:
 
-```
-componentDidMount: function() {
-	var elem = ReactDOM.findDOMNode(this);
-	$elem = $("#" + elem.id + " input").prop("checked", false);
-},
-```
+# FAQ
 
-see the `false` at the end of that line? you can change that to `true` if you like. `true` means all the check-to-delete checkboxes will start checked--i.e. baleet assumes you want to delete most of your shit. if you are feeling less misanthropic, keep it on `false`.
-
-i think that's it? let's set our twitter archives on fire is basically what i am saying.
-
-# faq
-
-* when will it not look like garbage?
-	* when you submit a pull request doing all that work for me friendo
+* When will it not look like garbage?
+	* When you submit a pull request with better CSS.
